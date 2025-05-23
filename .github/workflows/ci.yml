@@ -1,0 +1,108 @@
+name: Build & Test
+
+on: 
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  firmware-build:
+    name: Build Firmware
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        
+    - name: Install ARM GCC toolchain
+      uses: carlosperate/arm-none-eabi-gcc-action@v1
+      with:
+        release: '10.3-2021.10'
+        
+    - name: Configure CMake for firmware
+      run: |
+        cmake -B build-firmware \
+          -DCMAKE_TOOLCHAIN_FILE=cmake/arm-gcc.cmake \
+          -DCMAKE_BUILD_TYPE=Release
+          
+    - name: Build firmware
+      run: cmake --build build-firmware --parallel
+      
+    - name: Upload firmware artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: firmware-hex
+        path: |
+          build-firmware/*.hex
+          build-firmware/*.map
+          
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake
+        
+    - name: Configure CMake for tests
+      run: |
+        cmake -B build-tests \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DBUILD_TESTING=ON
+          
+    - name: Build tests
+      run: cmake --build build-tests --parallel
+      
+    - name: Run unit tests
+      run: ctest --test-dir build-tests --output-on-failure --verbose
+      
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        
+    - name: Install cppcheck
+      run: sudo apt-get update && sudo apt-get install -y cppcheck
+      
+    - name: Run cppcheck
+      run: |
+        cppcheck --enable=all --error-exitcode=1 \
+          --suppress=missingIncludeSystem \
+          --suppress=unusedFunction \
+          --std=c11 \
+          src/ include/ tests/
+          
+  documentation:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install Doxygen
+      run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+      
+    - name: Generate documentation
+      run: doxygen Doxyfile
+      
+    - name: Upload documentation
+      uses: actions/upload-artifact@v3
+      with:
+        name: documentation
+        path: docs/html/
