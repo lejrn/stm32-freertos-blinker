@@ -1,0 +1,33 @@
+{
+    // Disable Go extension for this workspace
+    "go.enabled": false,
+    "go.disableLanguageServer": true,
+    "go.useLanguageServer": false,
+    
+    // C/C++ settings for embedded development
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.intelliSenseMode": "gcc-arm",
+    "C_Cpp.default.compilerPath": "/usr/bin/arm-none-eabi-gcc",
+    
+    // CMake settings
+    "cmake.configureOnOpen": false,
+    "cmake.configureArgs": [
+        "-DCMAKE_TOOLCHAIN_FILE=cmake/arm-gcc.cmake"
+    ],
+    
+    // File associations
+    "files.associations": {
+        "*.h": "c",
+        "*.c": "c",
+        "FreeRTOSConfig.h": "c"
+    },
+    
+    // Terminal settings
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    
+    // Exclude unnecessary folders from file explorer
+    "files.exclude": {
+        "**/build*/": true,
+        "**/vendor/": false
+    }
+}

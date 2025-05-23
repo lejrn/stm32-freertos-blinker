@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "cortex-debug.cortex-debug"
+    ],
+    "unwantedRecommendations": [
+        "golang.go"
+    ]
+}
