@@ -1,0 +1,39 @@
+# Build directories
+build-*/
+build/
+
+# Generated files
+*.o
+*.d
+*.a
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+
+# IDE files
+.vscode/settings.json
+.vscode/launch.json
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation build
+docs/html/
+docs/latex/
+
+# Test results
+Testing/
+CTestTestfile.cmake
+cmake_install.cmake
+CMakeCache.txt
+CMakeFiles/
+Makefile
+
+# Unity test framework (downloaded dependency)
+_deps/
